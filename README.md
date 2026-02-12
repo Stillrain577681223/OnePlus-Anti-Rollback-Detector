@@ -14,7 +14,8 @@ https://www.coolapk.com/feed/70236029?s=NjM2YTE1MmMzYWJlY2FnNjk4ZDgwZTZ6a1602
 ---
 ## Download
 Download the package:
-[Anti-Rollback-Detector-ver1.3(Add-Eng-Version).zip | Google Drive Link | 340KiB](https://drive.google.com/file/d/1uMfnHU-QhEFs3bmg7WjNnV2JjMviPEav/view?usp=sharing)
+- [GDrive| Anti-Rollback-Detector-ver1.3(Add-Eng-Version).zip | 340KiB](https://drive.google.com/file/d/1uMfnHU-QhEFs3bmg7WjNnV2JjMviPEav/view?usp=sharing)
+- [Github | Anti-Rollback-Detector-ver1.3(Add-Eng-Version).zip | 340KiB](https://github.com/Stillrain577681223/OnePlus-Anti-Rollback-Detector/releases/download/v1.3/Anti-Rollback-Detector-ver1.3.Add-Eng-Version.zip)
 
 After unzipping, you will get 3 files:
 - `arbscan`
