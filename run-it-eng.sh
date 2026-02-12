@@ -31,20 +31,20 @@ YELLOW='\033[1;33m'
 NC='\033[0m'
 
 echo "————————————————————"
-echo -e "OnePlus Anti-Rollback Checker"
-echo -e "Author: Stillrain-001"
-echo -e "${YELLOW}This detection method was first published by me.${NC}"
-echo -e "${YELLOW}Licensed under MIT License.${NC}"
-echo -e "${YELLOW}If you find anyone redistributing without credit, please contact me.${NC}"
+echo "OnePlus Anti-Rollback Checker"
+echo "Author: Stillrain-001"
+echo "${YELLOW}This detection method was first published by me.${NC}"
+echo "${YELLOW}Licensed under MIT License.${NC}"
+echo "${YELLOW}If you find anyone redistributing without credit, please contact me.${NC}"
 echo ""
-echo -e "${YELLOW}Disclaimer:${NC}"
-echo -e "${YELLOW}This tool only extracts xbl_config partition and analyzes ARB status.${NC}"
-echo -e "${YELLOW}It does NOT modify your system.${NC}"
-echo -e "${YELLOW}I am NOT responsible for any risks caused by flashing.${NC}"
+echo "${YELLOW}Disclaimer:${NC}"
+echo "${YELLOW}This tool only extracts xbl_config partition and analyzes ARB status.${NC}"
+echo "${YELLOW}It does NOT modify your system.${NC}"
+echo "${YELLOW}I am NOT responsible for any risks caused by flashing.${NC}"
 echo ""
-echo -e "${YELLOW}If you agree, wait.${NC}"
-echo -e "${YELLOW}If not, close this script now.${NC}"
-echo -e "${YELLOW}Starting automatically in 7 seconds...${NC}"
+echo "${YELLOW}If you agree, wait.${NC}"
+echo "${YELLOW}If not, close this script now.${NC}"
+echo "${YELLOW}Starting automatically in 7 seconds...${NC}"
 
 for i in 7 6 5 4 3 2 1; do
   echo -n "$i… "
@@ -139,9 +139,9 @@ IDX=$(echo "$FULL_OUTPUT" | awk -F: '/ARB Index/{gsub(/ /,"");print $2}')
 su -c rm -f "$IMAGE_PATH"
 
 if [ "$IDX" = "0" ]; then
-    echo -e "Anti-Rollback ${GREEN}Disabled${NC}"
+    echo "Anti-Rollback ${GREEN}Disabled${NC}"
     echo "Note: Dimensity devices may have hidden ARB, take result carefully."
 else
-    echo -e "Anti-Rollback ${RED}Enabled${NC}"
+    echo "Anti-Rollback ${RED}Enabled${NC}"
     echo "DO NOT downgrade your device — you may brick it permanently!"
 fi

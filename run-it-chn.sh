@@ -18,17 +18,17 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 echo "————————————————————"
-echo -e "一加 Anti-Rollback 检测程序"
-echo -e "作者：静雨轩-Stillrain"
-echo -e "${YELLOW}此检测方式由我首个公开发布，遵循 MIT License，若有直接搬运不标明原作者的，请向我反馈。${NC}"
+echo "一加 Anti-Rollback 检测程序"
+echo "作者：静雨轩-Stillrain"
+echo "${YELLOW}此检测方式由我首个公开发布，遵循 MIT License，若有直接搬运不标明原作者的，请向我反馈。${NC}"
 echo ""
-echo -e "${YELLOW}免责声明：${NC}"
-echo -e "${YELLOW}本工具仅用于提取 xbl_config 镜像及分析 ARB 状态，${NC}"
-echo -e "${YELLOW}不修改系统行为，也不承担刷机风险。${NC}"
+echo "${YELLOW}免责声明：${NC}"
+echo "${YELLOW}本工具仅用于提取 xbl_config 镜像及分析 ARB 状态，${NC}"
+echo "${YELLOW}不修改系统行为，也不承担刷机风险。${NC}"
 echo ""
-echo -e "${YELLOW}若您同意检测，请等待；${NC}"
-echo -e "${YELLOW}若不同意，请退出此程序${NC}"
-echo -e "${YELLOW}程序将在 7 秒后自动开始${NC}"
+echo "${YELLOW}若您同意检测，请等待；${NC}"
+echo "${YELLOW}若不同意，请退出此程序${NC}"
+echo "${YELLOW}程序将在 7 秒后自动开始${NC}"
 for i in 7 6 5 4 3 2 1; do
   echo -n "$i… "
   sleep 1
@@ -134,9 +134,9 @@ IDX=$(echo "$FULL_OUTPUT" | awk -F: '/ARB Index/{gsub(/ /,"");print $2}')
 su -c rm -f "$IMAGE_PATH"
 
 if [ "$IDX" = "0" ]; then
-    echo -e "Anti-Rollback${GREEN}未启用${NC}"
+    echo "Anti-Rollback${GREEN}未启用${NC}"
     echo "天玑机型有隐藏ARB，所以不推荐参考！"
 else
-    echo -e "Anti-Rollback${RED}已启用${NC}"
+    echo "Anti-Rollback${RED}已启用${NC}"
     echo "请不要自行刷机降级，否则会变砖！"
 fi
