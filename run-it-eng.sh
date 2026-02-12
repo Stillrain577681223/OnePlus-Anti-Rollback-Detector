@@ -107,9 +107,9 @@ else
     echo "Found: $BIN"
 fi
 
-image_path="/data/local/tmp/xbl_config${SLOT}.img"
+IMAGE_PATH="/data/local/tmp/xbl_config${SLOT}.img"
 echo "Extracting image, please wait..."
-su -c "dd if=/dev/block/by-name/xbl_config${SLOT} of=${IMAGE_PATH} bs=4096" >/dev/null 2>&1
+su -c "dd if=/dev/block/by-name/xbl_config${SLOT} of=${IMAGE_PATH} bs=4096" &>/dev/null
 sleep 0.1
 
 if [ $? -eq 0 ]; then
@@ -129,7 +129,7 @@ echo "——————————————————"
 
 BUILD_ID=$(getprop ro.build.display.id)
 echo "Device Build: $BUILD_ID"
-echo "Current Slot: $(echo "$SLOT" | tr -d '_')"
+echo "Current Slot: ${SLOT/_/}"
 
 FULL_OUTPUT=$(echo N | su -c "$TMP_BIN" "$IMAGE_PATH" 2>&1 | grep "ARB Index")
 echo "$FULL_OUTPUT"
