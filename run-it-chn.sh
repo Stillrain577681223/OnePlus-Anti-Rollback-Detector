@@ -99,7 +99,7 @@ fi
 # 提取镜像
 IMAGE_PATH="/data/local/tmp/xbl_config${SLOT}.img"
 echo "镜像提取中，请稍候..."
-su -c "dd if=/dev/block/by-name/xbl_config${SLOT} of=${IMAGE_PATH} bs=4096" &>/dev/null
+su -c "dd if=/dev/block/by-name/xbl_config${SLOT} of=${IMAGE_PATH} bs=4096" >/dev/null 2>&1
 sleep 0.1
 if [ $? -eq 0 ]; then
     echo "镜像提取成功"
@@ -117,9 +117,10 @@ su -c "chmod +x \"$TMP_BIN\"" || { echo "为脚本授权时发生错误！"; exi
 echo "镜像提取完成，正在执行检测...请稍等"
 echo "——————————————————"
 # 输出 build 号
+# 输出 build 号
 BUILD_ID=$(getprop ro.build.display.id)
 echo "设备 build 号：$BUILD_ID"
-echo "当前槽位：${SLOT/_/}"
+echo "当前槽位：$(echo "$SLOT" | tr -d '_')"
 # 执行检测
 FULL_OUTPUT=$(echo N | su -c "$TMP_BIN" "$IMAGE_PATH" 2>&1 | grep "ARB Index")
 # 原版输出
