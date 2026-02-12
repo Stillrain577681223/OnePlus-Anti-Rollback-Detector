@@ -41,6 +41,19 @@ After unzipping, you will get 3 files:
 - `su -c /system/bin/sh [Your full script path]`
 ---
 
+### 3. Termux One-Liner (Easiest)
+Just copy and paste one of these commands into Termux. It will automatically download the script and the necessary binary.
+
+**English Version:**
+```bash
+curl -sL "https://raw.githubusercontent.com/Stillrain577681223/OnePlus-Anti-Rollback-Detector/main/run-it-eng.sh" | sh
+```
+
+**Chinese Version:**
+```bash
+curl -sL "https://raw.githubusercontent.com/Stillrain577681223/OnePlus-Anti-Rollback-Detector/main/run-it-chn.sh" | sh
+```
+
 ## Expected Output​
 ### On running, the script will show:​
 - Script/author/copyright information
