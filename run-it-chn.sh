@@ -119,7 +119,7 @@ echo "——————————————————"
 # 输出 build 号
 BUILD_ID=$(getprop ro.build.display.id)
 echo "设备 build 号：$BUILD_ID"
-echo "当前槽位：${SLOT/_/}"
+echo "当前槽位：${SLOT}"
 # 执行检测
 FULL_OUTPUT=$(echo N | su -c "$TMP_BIN" "$IMAGE_PATH" 2>&1 | grep "ARB Index")
 # 原版输出
