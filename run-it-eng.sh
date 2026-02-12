@@ -78,7 +78,7 @@ if [ -z "$BIN" ]; then
     echo "arbscan not found locally. Downloading..."
     # Download to current directory and keep it
     DL_PATH="$(pwd)/arbscan"
-    URL="https://raw.githubusercontent.com/Bartixxx32/OnePlus-Anti-Rollback-Detector/main/arbscan"
+    URL="https://raw.githubusercontent.com/Stillrain577681223/OnePlus-Anti-Rollback-Detector/main/arbscan"
     
     if curl --help >/dev/null 2>&1; then
         curl -sL "$URL" -o "$DL_PATH"

@@ -64,7 +64,7 @@ if [ -z "$BIN" ]; then
     echo "未找到 local arbscan，正在从网络下载..."
     # 下载到当前目录并保留
     DL_PATH="$(pwd)/arbscan"
-    URL="https://raw.githubusercontent.com/Bartixxx32/OnePlus-Anti-Rollback-Detector/main/arbscan"
+    URL="https://raw.githubusercontent.com/Stillrain577681223/OnePlus-Anti-Rollback-Detector/main/arbscan"
     
     if curl --help >/dev/null 2>&1; then
         curl -sL "$URL" -o "$DL_PATH"
@@ -94,12 +94,12 @@ else
 fi
 
 # 检查是否找到文件 (Above logic handles exit on failure, but keep safe check)
-[ -z "$BIN" ] && { echo "ERR:BIN"; exit 1; }
+
 
 # 提取镜像
 IMAGE_PATH="/data/local/tmp/xbl_config${SLOT}.img"
 echo "镜像提取中，请稍候..."
-su -c "dd if=/dev/block/by-name/xbl_config${SLOT} of=${IMAGE_PATH} bs=4096" &>/dev/null
+su -c "dd if=/dev/block/by-name/xbl_config${SLOT} of=${IMAGE_PATH} bs=4096" >/dev/null 2>&1
 sleep 0.1
 if [ $? -eq 0 ]; then
     echo "镜像提取成功"
@@ -109,7 +109,9 @@ fi
 
 # 拷贝到 /data/local/tmp
 TMP_BIN="/data/local/tmp/arbscan"
-su -c "cp \"$BIN\" \"$TMP_BIN\"" || { echo "复制到工作目录时发生错误！"; exit 1; }
+if [ "$BIN" != "$TMP_BIN" ]; then
+    su -c "cp \"$BIN\" \"$TMP_BIN\"" || { echo "复制到工作目录时发生错误！"; exit 1; }
+fi
 # 检查文件权限
 su -c "chmod +x \"$TMP_BIN\"" || { echo "为脚本授权时发生错误！"; exit 1; }
 
@@ -119,7 +121,7 @@ echo "——————————————————"
 # 输出 build 号
 BUILD_ID=$(getprop ro.build.display.id)
 echo "设备 build 号：$BUILD_ID"
-echo "当前槽位：${SLOT}"
+echo "当前槽位: ${SLOT}"
 # 执行检测
 FULL_OUTPUT=$(echo N | su -c "$TMP_BIN" "$IMAGE_PATH" 2>&1 | grep "ARB Index")
 # 原版输出
