@@ -75,8 +75,34 @@ BIN=$(find "$SCRIPT_DIR" -type f -name arbscan 2>/dev/null | head -n 1)
     ! -path "/storage/emulated/0/Android/*" 2>/dev/null | head -n 1)
 
 if [ -z "$BIN" ]; then
-    echo "ERR: arbscan not found!"
-    exit 1
+    echo "arbscan not found locally. Downloading..."
+    # Download to current directory and keep it
+    DL_PATH="$(pwd)/arbscan"
+    URL="https://raw.githubusercontent.com/Bartixxx32/OnePlus-Anti-Rollback-Detector/main/arbscan"
+    
+    if curl --help >/dev/null 2>&1; then
+        curl -sL "$URL" -o "$DL_PATH"
+    elif wget --help >/dev/null 2>&1; then
+        wget -q "$URL" -O "$DL_PATH"
+    else
+        echo "ERR: Failed to download arbscan (curl/wget missing)."
+        exit 1
+    fi
+
+    if [ -f "$DL_PATH" ]; then
+        BIN="$DL_PATH"
+        chmod +x "$BIN"
+        echo "Download successful."
+        
+        # Copy to /data/local/tmp for execution (required on some Android versions)
+        # We KEEP the downloaded file in current dir for next time
+        TMP_BIN="/data/local/tmp/arbscan"
+        su -c "cp \"$BIN\" \"$TMP_BIN\"" || { echo "Failed to copy to working directory!"; exit 1; }
+        BIN="$TMP_BIN"
+    else
+        echo "ERR: Download failed!"
+        exit 1
+    fi
 else
     echo "Found: $BIN"
 fi
@@ -93,7 +119,9 @@ else
 fi
 
 TMP_BIN="/data/local/tmp/arbscan"
-su -c "cp \"$BIN\" \"$TMP_BIN\"" || { echo "Failed to copy to working directory!"; exit 1; }
+if [ "$BIN" != "$TMP_BIN" ]; then
+    su -c "cp \"$BIN\" \"$TMP_BIN\"" || { echo "Failed to copy to working directory!"; exit 1; }
+fi
 su -c "chmod +x \"$TMP_BIN\"" || { echo "Failed to set execute permission!"; exit 1; }
 
 echo "Image ready, starting detection..."

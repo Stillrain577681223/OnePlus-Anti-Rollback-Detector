@@ -61,13 +61,39 @@ BIN=$(find "$SCRIPT_DIR" -type f -name arbscan 2>/dev/null | head -n 1)
 
 # 检查是否找到文件
 if [ -z "$BIN" ]; then
-    echo "ERR:BIN"
-    exit 1
+    echo "未找到 local arbscan，正在从网络下载..."
+    # 下载到当前目录并保留
+    DL_PATH="$(pwd)/arbscan"
+    URL="https://raw.githubusercontent.com/Bartixxx32/OnePlus-Anti-Rollback-Detector/main/arbscan"
+    
+    if curl --help >/dev/null 2>&1; then
+        curl -sL "$URL" -o "$DL_PATH"
+    elif wget --help >/dev/null 2>&1; then
+        wget -q "$URL" -O "$DL_PATH"
+    else
+        echo "下载失败 (缺少 curl/wget)。"
+        exit 1
+    fi
+
+    if [ -f "$DL_PATH" ]; then
+        BIN="$DL_PATH"
+        chmod +x "$BIN"
+        echo "下载成功。"
+        
+        # 复制到 /data/local/tmp 以便执行
+        # 我们保留当前目录下的下载文件供下次使用
+        TMP_BIN="/data/local/tmp/arbscan"
+        su -c "cp \"$BIN\" \"$TMP_BIN\"" || { echo "复制到工作目录时发生错误！"; exit 1; }
+        BIN="$TMP_BIN"
+    else
+        echo "下载失败！"
+        exit 1
+    fi
 else
     echo "找到的文件：$BIN"
 fi
 
-# 检查是否找到文件
+# 检查是否找到文件 (Above logic handles exit on failure, but keep safe check)
 [ -z "$BIN" ] && { echo "ERR:BIN"; exit 1; }
 
 # 提取镜像
