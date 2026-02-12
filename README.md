@@ -13,9 +13,13 @@ https://www.coolapk.com/feed/70236029?s=NjM2YTE1MmMzYWJlY2FnNjk4ZDgwZTZ6a1602
 
 ---
 ## Download
-Download the package:
-- [GDrive| Anti-Rollback-Detector-ver1.3(Add-Eng-Version).zip | 340KiB](https://drive.google.com/file/d/1uMfnHU-QhEFs3bmg7WjNnV2JjMviPEav/view?usp=sharing)
+Download the package from releases
 - [Github | Anti-Rollback-Detector-ver1.3(Add-Eng-Version).zip | 340KiB](https://github.com/Stillrain577681223/OnePlus-Anti-Rollback-Detector/releases/download/v1.3/Anti-Rollback-Detector-ver1.3.Add-Eng-Version.zip)
+or use Termux and run this command
+`curl -sL "https://raw.githubusercontent.com/Stillrain577681223/OnePlus-Anti-Rollback-Detector/main/run-it-chn.sh" -o run-it-chn.sh && bash -i run-it-chn.sh`
+
+and you can skip to **Expected Output**
+
 
 After unzipping, you will get 3 files:
 - `arbscan`
