@@ -129,7 +129,7 @@ echo "——————————————————"
 
 BUILD_ID=$(getprop ro.build.display.id)
 echo "Device Build: $BUILD_ID"
-echo "Current Slot: ${SLOT/_/}"
+echo "Current Slot: ${SLOT}"
 
 FULL_OUTPUT=$(echo N | su -c "$TMP_BIN" "$IMAGE_PATH" 2>&1 | grep "ARB Index")
 echo "$FULL_OUTPUT"
