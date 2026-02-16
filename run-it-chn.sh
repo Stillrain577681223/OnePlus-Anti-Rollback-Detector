@@ -30,7 +30,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m'
 echo "————————————————————"
-echo "一加 Anti-Rollback 检测程序 ver1.6"
+echo "一加 Anti-Rollback 检测程序 ver1.8"
 echo "作者：静雨轩-Stillrain"
 echo "由Github@Bartixxx提供部分技术支持和代码改进"
 echo "欢迎各位前往Bartixxx的ARB查询网站"
@@ -53,13 +53,52 @@ done
 echo ""
 echo "————————————————————"
 # 当前槽位
-SLOT=$(getprop ro.boot.slot_suffix 2>/dev/null)
-PART="/dev/block/by-name/xbl_config${SLOT}"
+SLOT=$(getprop ro.boot.slot_suffix 2>/dev/null & sleep 1; kill $! 2>/dev/null)
+PART=""  # 初始化变量，避免为空
 
-if ! su -c cat "$PART" > /dev/null 2>&1; then
-    echo "没有该分区！"
+if [ "$SLOT" = "_a" ] || [ "$SLOT" = "_b" ]; then
+    PART="/dev/block/by-name/xbl_config${SLOT}"
+elif [ "$SLOT" = "a" ] || [ "$SLOT" = "b" ]; then
+    PART="/dev/block/by-name/xbl_config_${SLOT}"
+elif [ -z "$SLOT" ]; then
+    # 场景3：无槽位（A-only 分区设备）
+    PART="/dev/block/by-name/xbl_config"
+    echo -e "\n⚠️  检测到您的设备是 A-only 分区设备，请核对"
+    echo "请按下回车键继续..."
+    read -r  # 等待用户回车
+else
+    # 场景4：未知槽位格式（兜底+debug 反馈）
+    PART="/dev/block/by-name/xbl_config${SLOT}"
+    # 校验拼接后的路径是否为有效格式（仅允许 a/b/_a/_b 后缀）
+    suffix_ok=0
+
+    if [[ "$PART" = *"xbl_config_a"  ]]; then suffix_ok=1; fi
+    if [[ "$PART" = *"xbl_config_b"  ]]; then suffix_ok=1; fi
+    if [[ "$PART" = *"xbl_config_aa" ]]; then suffix_ok=1; fi
+    if [[ "$PART" = *"xbl_config_bb" ]]; then suffix_ok=1; fi
+
+    if [ $suffix_ok -eq 0 ]; then
+        echo -e "\n[debug]未知槽位格式：$SLOT"
+        echo "拼接后分区路径：$PART"
+        echo "请截图发给开发者，谢谢！"
+        echo "按下回车键继续检测（可能失败）..."
+        read -r
+    fi
+fi
+
+# 最终兜底：若分区不存在，自动查找所有 xbl_config 相关分区
+if ! su -c "[ -b $PART ]" >/dev/null 2>&1; then
+    echo -e "\n❌ 拼接后的分区 $PART 不存在！"
+    echo "【debug】自动查找所有 xbl_config 相关分区："
+    set -x
+    su -c "ls -l /dev/block/by-name | grep -E 'xbl_config' 2>/dev/null"
+    set +x
+    echo "请截图反馈给开发者"
+    echo "天玑机型无需反馈，天玑机型无法使用该脚本"
     exit 1
 fi
+
+echo -e "\n✅ 最终使用分区：$PART"
 
 # 提示用户正在查找 arbextract（替换原arbscan）
 echo "正在搜索 arbextract 位置，请稍候..."
@@ -75,7 +114,6 @@ BIN=$(find "$SCRIPT_DIR" -type f -name arbextract 2>/dev/null | head -n 1)
 -type d \( -name "DCIM" -o -name "Pictures" -o -name "Movies" -o -name "Android" \) -prune -o \
 -type f -name "arbextract" -print 2>/dev/null | head -n 1)
 
-    
 NEED_COPY=1
 # 检查是否找到文件，感谢Github@Bartixxx提供代码
 #———————————————————————
@@ -171,7 +209,7 @@ fi
 if [ -z "$BIN" ]; then
     echo "本地文件无效，拉取Gitee仓库下载..."
     DL_PATH="$(pwd)/arbextract"
-    URL="https://gitee.com/Stillrain001/OnePlus-Anti-Rollback-Detector/blob/main/arbextract"
+    URL="https://gitee.com/Stillrain001/OnePlus-Anti-Rollback-Detector/raw/main/arbextract"
 
     if curl --help >/dev/null 2>&1; then
         curl -sL "$URL" -o "$DL_PATH"
@@ -251,26 +289,70 @@ fi
 
 echo
 # 提取镜像（dd添加>/dev/null重定向）
-IMAGE_PATH="/data/local/tmp/xbl_config${SLOT}.img"
+IMAGE_PATH="/storage/emulated/0/xbl_config.img"
 echo "镜像提取中，请稍候..."
 su -c "dd if=/dev/block/by-name/xbl_config${SLOT} of=${IMAGE_PATH} bs=4096 >/dev/null 2>&1" 2>&1
 
 if [ $? -eq 0 ]; then
-    echo "镜像提取成功"
+    echo "镜像提取成功，镜像位置："
+    echo "$IMAGE_PATH"
 else
-    echo "提取镜像时发生错误，但继续执行脚本。"
+    echo "提取镜像时发生错误，请检查镜像是否存在，镜像位置："
+    echo "按z继续检测，按x退出检测，按c重新提取："
+    read -r input  # 读取用户输入到input变量
+    if [ "$input" = "z" ] || [ "$input" = "Z" ]; then
+        echo "继续检测..."
+    elif [ "$input" = "x" ] || [ "$input" = "X" ]; then
+        echo "退出检测"
+        exit 0
+    elif [ "$input" = "c" ] || [ "$input" = "C" ]; then
+        echo "尝试输出日志执行"
+        su -c "dd if=/dev/block/by-name/xbl_config${SLOT} of=${IMAGE_PATH} bs=4096 2>&1" 2>&1
+        if [ $? -eq 0 ]; then
+            echo "镜像提取成功，镜像位置："
+            echo "$IMAGE_PATH"
+        else
+            echo "提取镜像时发生错误，请检查镜像是否存在，镜像位置："
+            echo "按z继续检测，按x退出检测："
+            read -r input  # 读取用户输入到input变量
+            if [ "$input" = "z" ] || [ "$input" = "Z" ]; then
+                echo "继续检测..."
+            elif [ "$input" = "x" ] || [ "$input" = "X" ]; then
+                echo "退出检测"
+                exit 0
+            fi
+        fi
+    fi
 fi
 
 # 拷贝到 /data/local/tmp
 TMP_BIN="/data/local/tmp/arbextract"
 if [ $NEED_COPY -eq 1 ]; then
   if [ "$BIN" != "$TMP_BIN" ]; then
-    su -c "cp \"$BIN\" \"$TMP_BIN\" >/dev/null 2>&1" || { echo "复制到工作目录时发生错误！"; exit 1; }
+      su -c "cp \"$BIN\" \"$TMP_BIN\" >/dev/null 2>&1"
+# 判断上一条命令是否执行成功（$? -eq 0 为成功）
+      if [ $? -ne 0 ]; then
+          echo "复制到工作目录时发生错误！"
+          echo "尝试输出日志执行"
+          su -c "cp \"$BIN\" \"$TMP_BIN\" 2>&1"
+          if [ $? -ne 0 ]; then
+              echo "复制到工作目录时发生错误！"
+              exit 1 
+          fi
+      fi
     NEED_COPY=0
   fi
 fi
 # 检查文件权限
-su -c "chmod +x \"$TMP_BIN\" >/dev/null 2>&1" || { echo "为脚本授权时发生错误！"; exit 1; }
+su -c "chmod +x \"$TMP_BIN\" >/dev/null 2>&1"
+if [ $? -ne 0 ]; then
+    echo "为脚本授权时时发生错误！"
+    echo "尝试输出日志执行"
+    su -c "chmod +x \"$TMP_BIN\" 2>&1"
+    if [ $? -ne 0 ]; then
+        echo "为脚本授权时时发生错误！"
+    fi
+fi
 
 # 提示用户镜像提取完成
 echo "镜像提取完成，正在执行检测...请稍等"
